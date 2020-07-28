@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ingress-nginx
-  namespace: ingress-nginx
+  namespace: ingress-nginx # make sure this matches namespace your ingress controller is in
   labels:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx

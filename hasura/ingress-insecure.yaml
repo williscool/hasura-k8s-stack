@@ -1,18 +1,16 @@
+# https://kubernetes.github.io/ingress-nginx/user-guide/basic-usage/
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: hasura
   annotations:
     kubernetes.io/ingress.class: "nginx"    
-    certmanager.k8s.io/issuer: "letsencrypt-staging"
-    #certmanager.k8s.io/issuer: "letsencrypt-prod"
-    certmanager.k8s.io/acme-challenge-type: http01
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 
 spec:
   tls:
   - hosts:
     - kubernetes.docker.internal
-    secretName: k8s-stack-hasura-app-tls
   rules:
   - host: kubernetes.docker.internal
     http:
@@ -20,4 +18,4 @@ spec:
       - path: /
         backend:
           serviceName: hasura
-          servicePort: 80
+          servicePort: 8080
