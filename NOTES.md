@@ -15,10 +15,10 @@ kubectl apply -f hasura/deployment-service.yaml
 kubectl apply -f nginx-ingress/cloud-generic.yaml
 kubectl apply -f nginx-ingress/mandatory.yaml
 
- kubectl apply -f hasura/ingress-insecure.yaml
+kubectl apply -f hasura/ingress-insecure.yaml
 
 
-kubectl -n ingress port-forward --address localhost,0.0.0.0 service/ingress-nginx 8080:80
+kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 8080:80
 
 visit
 http://kubernetes.docker.internal:8080/console/
