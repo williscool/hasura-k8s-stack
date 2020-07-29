@@ -16,7 +16,17 @@ A feature-complete Hasura stack on Kubernetes.
 
 ![architecture](assets/arch.png)
 
-## Setting up
+## Quick Setup
+
+```
+./scripts/bootstrap-cluster.sh
+```
+
+## Notes
+
+[NOTES.md](NOTES.md)
+
+## How to aka Manual Setup
 
 _This guide is written with the assumption that the user is well versed with
 Kubernetes and the user has a Kubernetes cluster with enough resources ready for
