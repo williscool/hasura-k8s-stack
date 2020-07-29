@@ -1,4 +1,4 @@
-# hasura-k8s-stack
+# will's hasura-k8s-stack
 
 A feature-complete Hasura stack on Kubernetes.
 
@@ -333,4 +333,7 @@ The GraphQL server should be available at `http://remote-schema/graphql` from wi
 ___
 
 
-A big shoutout to the folks at [appsintegra](https://www.appsintegra.com/) for collaborating with Hasura on this repo.
+Credits:
+
+Hello my name is [William Harris](https://will.vc/). A software engineer / consultant based in the US.
+
