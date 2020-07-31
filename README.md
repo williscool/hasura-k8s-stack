@@ -1,6 +1,6 @@
 # will's hasura-k8s-stack
 
-A feature-complete Hasura stack on Kubernetes.
+A feature-complete Hasura stack on Kubernetes that runs in kind on docker desktop windows!
 
 
 ## Components
@@ -8,7 +8,7 @@ A feature-complete Hasura stack on Kubernetes.
 - Postgres _(For production use cases, it is recommended to have a managed/highly available Postgres instance)_
 - Hasura GraphQL Engine
 - Nginx for Ingress
-- Cert Manager for auto SSL with Let's Encrypt
+- Cert Manager for auto SSL with Let's Encrypt (or self signed cert in a localhost env)
 - Remote Schema with Express.js and GraphQL.js
 - Event Triggers with Express.js
 
@@ -22,7 +22,7 @@ A feature-complete Hasura stack on Kubernetes.
 ./scripts/bootstrap-cluster.sh
 ```
 
-## Notes
+## Wills Extra Notes
 
 [NOTES.md](NOTES.md)
 
@@ -209,14 +209,14 @@ vendor as it can be configured directly with the Ingress controller.
 ```bash
 cd cert-manager
 
-# create the namespace
-kubectl apply -f namespace.yaml
-
-# create crds
-kubectl apply -f 00-crds.yaml
-
-# create the cert manager resources
-kubectl apply -f cert-manager.yaml
+# use helm to install latest cert-manager
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v0.16.0 \
+  --set installCRDs=true
 
 # create letsencrypt staging and prod issuers
 kubectl apply -f le-staging-issuer.yaml

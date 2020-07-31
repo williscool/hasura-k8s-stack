@@ -1,0 +1,31 @@
+# only for dev
+# note since im not setting namespaces here they will default to default
+
+# other useful articles 
+# https://letsencrypt.org/docs/certificates-for-localhost/
+# https://kubernetes.github.io/ingress-nginx/examples/tls-termination/
+# useful command to debug ssl
+# curl -kL --verbose https://kubernetes.docker.internal/
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+  namespace: cert-manager
+spec:
+  selfSigned: {}
+---
+# https://tech.paulcz.net/blog/creating-self-signed-certs-on-kubernetes/
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: first-tls
+spec:
+  secretName: first-tls
+  dnsNames:
+  - "*.svc.cluster.local"
+  - "*.docker.internal"
+  - "localhost"
+  - "127.0.0.1"
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer #NOTE: MUST INDICATE THIS IF YOU USE CLUSTER ISSUER

@@ -1,6 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: hasura
+    hasuraService: custom
   name: hasura
 spec:
   selector:
@@ -26,6 +29,9 @@ spec:
              key: accessKey
              name: hasura
         - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+          value: "true"
+          ## enable debugging mode. It is recommended to disable this in production
+        - name: HASURA_GRAPHQL_DEV_MODE
           value: "true"
         resources:
           limits:

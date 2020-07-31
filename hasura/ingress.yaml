@@ -4,9 +4,9 @@ metadata:
   name: hasura
   annotations:
     kubernetes.io/ingress.class: "nginx"    
-    certmanager.k8s.io/issuer: "letsencrypt-staging"
-    #certmanager.k8s.io/issuer: "letsencrypt-prod"
-    certmanager.k8s.io/acme-challenge-type: http01
+    cert-manager.io/cluster-issuer: "selfsigned-issuer"
+    #certmanager.io/issuer: "letsencrypt-prod"
+    #certmanager.io/acme-challenge-type: http01
 
 spec:
   tls:
@@ -20,4 +20,4 @@ spec:
       - path: /
         backend:
           serviceName: hasura
-          servicePort: 80
+          servicePort: 8080

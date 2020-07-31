@@ -17,11 +17,31 @@ kubectl apply -f nginx-ingress/mandatory.yaml
 
 kubectl apply -f hasura/ingress-insecure.yaml
 
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install --create-namespace \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v0.16.0 \
+  --set installCRDs=true
+
+  # https://github.com/jetstack/cert-manager/issues/1873#issuecomment-595313837
+kubectl wait --for=condition=Available deployment/cert-manager-webhook -n cert-manager
+kubectl apply -f cert-manager/dev-self-signed-cert-and-issuer.yaml
+
+
+# create letsencrypt staging and prod issuers
+# only do this on non local clusters... if your cluser is on localhost use self signed stuff..
+# other wise the cluster stops respoding to kubectl and you have to delete it and restart
+# I think cert-manager enters an infinte loop of failing to get certs from letsencrypt
+kubectl apply -f cert-manager/le-staging-issuer.yaml
+kubectl apply -f cert-manager/le-prod-issuer.yaml
+
 
 kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 8080:80
 
 visit
-http://kubernetes.docker.internal:8080/console/
+http://kubernetes.docker.internal/console/
 
 note: I think the redirect url at the root / route is broken if you don't have https setup ... still working on that
 solution? just go strait to /console as above
