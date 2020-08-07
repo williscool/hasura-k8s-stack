@@ -1,3 +1,8 @@
+TODO: 
+
+migrate all the things to helm
+https://github.com/newtonjose/hasura-k8s-stack/tree/master/hasura-chart
+
 # works on kind in docker for win if you are using metallb 
 # checkout https://github.com/kubernetes-sigs/kind/issues/702#issuecomment-664569840
 # to see how to set that up
@@ -39,6 +44,9 @@ kubectl apply -f cert-manager/le-prod-issuer.yaml
 
 
 kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 8080:80
+kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 443:443
+
+hasura console --endpoint https://kubernetes.docker.internal/ --insecure-skip-tls-verify --admin-secret "accessKey"
 
 visit
 http://kubernetes.docker.internal/console/
