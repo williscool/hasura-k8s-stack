@@ -13,6 +13,8 @@ kubectl apply -f postgres/persistvol.yaml # this MUST FINISH before you can go f
 kubectl apply -f postgres/pvc.yaml
 kubectl apply -f postgres/deployment-service.yaml
 
+kubectl wait --for=condition=Available --timeout=180s deployments/postgres
+
 kubectl apply -f hasura/secret.yaml
 kubectl apply -f hasura/deployment-service.yaml
 
@@ -35,7 +37,7 @@ helm install --create-namespace \
   --set installCRDs=true
 
 # https://github.com/jetstack/cert-manager/issues/1873#issuecomment-595313837
-kubectl wait --for=condition=Available deployment/cert-manager-webhook -n cert-manager
+kubectl wait --for=condition=Available --timeout=180s deployment/cert-manager-webhook -n cert-manager
 kubectl apply -f cert-manager/dev-self-signed-cert-and-issuer.yaml
 
 # # create letsencrypt staging and prod issuers
@@ -55,8 +57,12 @@ echo "
 commands to run stuff
 
 # http
-sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0 service/ingress-nginx 80:80
+sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 80:80
 
 # ssl
-sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0 service/ingress-nginx 443:443
+sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 443:443
+
+# postgres
+kubectl port-forward --address localhost,0.0.0.0 deployment/postgres 5432:5432
+
 "
