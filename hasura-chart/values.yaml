@@ -8,7 +8,7 @@ image:
   repository: hasura/graphql-engine
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart version.
-  tag: ""
+  tag: v1.3.1
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -42,29 +42,31 @@ service:
   containerPort: 8080
 
 ingress:
-  enabled: false
-  annotations: {}
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"    
+    cert-manager.io/cluster-issuer: "selfsigned-issuer"
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  tls:
+    - secretName: k8s-stack-hasura-app-tls
+      hosts:
+        - kubernetes.docker.internal
   hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: kubernetes.docker.internal
+      paths: [/,]
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    memory: 256Mi
+    cpu: 500m
+  requests:
+    memory: 128Mi
+    cpu: 50m
 
 autoscaling:
   enabled: false
@@ -79,14 +81,26 @@ tolerations: []
 
 affinity: {}
 
-postgres:
-  enabled: true
-  postgresUsername: username
-  postgresPassword: password
-  postgresqlDatabase: dbname
+env:
+  HASURA_GRAPHQL_ENABLE_CONSOLE: true
+  HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log # https://hasura.io/docs/1.0/graphql/core/deployment/logging.html
+  HASURA_GRAPHQL_JWT_SECRET: '{"type": "RS256","key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwBBlmVXqrf9AXS1hEzKM\n/HfZ0JvaXMCUpLVe5IsTd3WFMq0HW6vXojM+tX+MJ0Zw4HdRRN7zjW6aq0dSugn+\ng7cCLhvE08r42746Ak2Nb3WntT+eZySn8q1KSuOEwUNtLwyFYlQDrtpXCd62PX3S\nwn252IYxLx1gzwjc8J8DvLs/Ix0UPjgEJja9fZovdIxt7svkLOtjRAazCguZeVEn\nCHIqG8mum6M6JSNVlp6sSS00FM3oJvM+MLvmxMckunNg+gGgoHvD+jpY/j64zRwo\n54aKfys6pM7D7jdc9YiWihQRTJPmkyyIswluMm/mS/l/tBawluxK4beSArrz7pP4\nWwIDAQAB\n-----END PUBLIC KEY-----\n"}'
 
-dependencies:
-  - name: postgres
-    repository: https://charts.bitnami.com/bitnami
-    version: 9.4.0
-    condition: postgres.enabled, global.postgres.enabled
+secrets:
+  enabled: true
+
+auth:
+  hook:
+    enabled: false
+  jwt:
+    enabled: true
+
+# https://stackoverflow.com/questions/55748639/set-value-in-dependency-of-helm-chart  
+postgresql:
+  enabled: false # I could not get postgresql to set the correct username and other credentials as a subchart / dependency so I just set it up on command line
+
+global:
+  postgresql:
+    postgresqlUsername: username
+    postgresqlPassword: password
+    postgresqlDatabase: dbname

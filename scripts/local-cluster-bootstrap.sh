@@ -5,6 +5,7 @@
 #  https://www.pulumi.com/docs/guides/adopting/from_kubernetes/#deploying-a-single-kubernetes-yaml-file
 # exceptions https://pulumi-community.slack.com/archives/C84L4E3N1/p1592948569327000?thread_ts=1592944538.326900&cid=C84L4E3N1
 
+
 # Check NOTES.md for inspirations
 
 # replacing with bitnami postgres
@@ -14,23 +15,44 @@
 # kubectl apply -f postgres/pvc.yaml
 # kubectl apply -f postgres/deployment-service.yaml
 
+helm uninstall postgres
+kubectl delete pvc -l release=postgres # comment this out if you want to keep your postgres voume in between runs
+
+echo "
+if things get weird with postgres dont forget!
+
+kubectl delete pvc <TAB><TAB> <i.e. for data-postgres-postgresql-0
+
+to delete the persistvol and start from scratch
+"
+helm uninstall hasura
+
 # actually have this setup as a dependency of the hasura chart
-# helm repo add bitnami https://charts.bitnami.com/bitnami
-# helm install postgres bitnami/postgresql --set postgresqlPassword=password, postgresqlDatabase=dbname, postgresqlUsername=username
+helm repo add bitnami https://charts.bitnami.com/bitnami
 
-kubectl wait --for=condition=Available --timeout=180s deployments/postgres
+# username must be postgres to get superuser privlesges https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml#L127
+# which it defaults to
+helm install postgres bitnami/postgresql --set 'postgresqlDatabase=dbname' --set 'postgresqlUsername=postgres' --set 'postgresqlPassword=password' 
 
-helm install hasura ./hasura-chart --set dburl=postgres://username:password@postgres:5432/dbname, accessKey=accessKey
+# kubectl wait --for=condition=Available --timeout=180s deployments/postgres
 
-kubectl apply -f hasura/secret.yaml
-kubectl apply -f hasura/deployment-service.yaml
+# helm chart does this now
+#kubectl apply -f hasura/secret.yaml
+#kubectl apply -f hasura/deployment-service.yaml
+
+helm install hasura ./hasura-chart --set secrets.dburl='postgres://postgres:password@postgres-postgresql:5432/dbname' --set secrets.accessKey='accessKey'
+
+# TODO: use helm for nginx-ingress also
+# in my own setup I already have it installed in the cluster variables
+# https://github.com/williscool/deploy-kubernetes-kind
+# check out the config in https://github.com/williscool/deploy-kubernetes-kind/blob/28300fb25d9d7d42e250e72696ba0c3bbdd8a540/local-cluster/helmfile.yaml
 
 kubectl apply -f nginx-ingress/cloud-generic.yaml
 kubectl apply -f nginx-ingress/mandatory.yaml
 
 # uncomment if you don't like dealing with ssl and having to run service on 80 and 443
-#kubectl apply -f hasura/ingress-insecure.yaml
-kubectl apply -f hasura/ingress.yaml # NOTE: if you run ssl ingress you must port-forward on 443 also!
+# kubectl apply -f hasura/ingress-insecure.yaml
+# kubectl apply -f hasura/ingress.yaml # NOTE: if you run ssl ingress you must port-forward on 443 also!
 
 # 
 # # TODO: move to helmfile
@@ -56,6 +78,9 @@ kubectl apply -f cert-manager/dev-self-signed-cert-and-issuer.yaml
 # https://codelearn.me/2019/01/13/wsl-windows-toast.html
 # https://github.com/microsoft/WSL/issues/2466#issuecomment-662184581
 
+
+kubectl get pods
+
 if grep -q Microsoft /proc/version; then
  powershell.exe 'New-BurntToastNotification -Text "hasura cluster is Up!" -Sound "Default" -SnoozeAndDismiss'
 fi
@@ -70,6 +95,6 @@ sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/i
 sudo kubectl -n ingress-nginx port-forward --address localhost,0.0.0.0 service/ingress-nginx 443:443
 
 # postgres
-kubectl port-forward --address localhost,0.0.0.0 deployment/postgres 5432:5432
+kubectl port-forward --address localhost,0.0.0.0 svc/postgres-postgresql 5432:5432
 
 "
