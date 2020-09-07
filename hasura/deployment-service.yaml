@@ -33,6 +33,9 @@ spec:
           ## enable debugging mode. It is recommended to disable this in production
         - name: HASURA_GRAPHQL_DEV_MODE
           value: "true"
+          # https://github.com/hasura/graphql-engine/issues/1288#issuecomment-549757362
+        - name: HASURA_GRAPHQL_JWT_SECRET
+          value: '{"type": "RS256","key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwBBlmVXqrf9AXS1hEzKM\n/HfZ0JvaXMCUpLVe5IsTd3WFMq0HW6vXojM+tX+MJ0Zw4HdRRN7zjW6aq0dSugn+\ng7cCLhvE08r42746Ak2Nb3WntT+eZySn8q1KSuOEwUNtLwyFYlQDrtpXCd62PX3S\nwn252IYxLx1gzwjc8J8DvLs/Ix0UPjgEJja9fZovdIxt7svkLOtjRAazCguZeVEn\nCHIqG8mum6M6JSNVlp6sSS00FM3oJvM+MLvmxMckunNg+gGgoHvD+jpY/j64zRwo\n54aKfys6pM7D7jdc9YiWihQRTJPmkyyIswluMm/mS/l/tBawluxK4beSArrz7pP4\nWwIDAQAB\n-----END PUBLIC KEY-----\n"}'
         resources:
           limits:
             memory: "256Mi"
