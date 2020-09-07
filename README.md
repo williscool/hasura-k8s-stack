@@ -16,11 +16,15 @@ A feature-complete Hasura stack on Kubernetes that runs in kind on docker deskto
 
 ![architecture](assets/arch.png)
 
+
+
 ## Quick Setup
 
 ```
 ./scripts/bootstrap-cluster.sh
 ```
+
+
 
 ## Wills Extra Notes
 
@@ -48,6 +52,15 @@ secret files should never be committed to the repo.
 
 #### Installation
 
+helm install
+
+``` bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install postgres bitnami/postgresql --set postgresqlPassword=password, postgresqlDatabase=dbname, postgresqlUsername=username
+```
+
+
+manual install if thats your style (DEPRECATED for me)
 ```bash
 cd postgres
 

@@ -7,13 +7,20 @@
 
 # Check NOTES.md for inspirations
 
-kubectl apply -f postgres/secret.yaml
-mkdir /tmp/k8s-hasura-test
-kubectl apply -f postgres/persistvol.yaml # this MUST FINISH before you can go forth https://github.com/kubernetes/kubernetes/issues/44370#issuecomment-528435944
-kubectl apply -f postgres/pvc.yaml
-kubectl apply -f postgres/deployment-service.yaml
+# replacing with bitnami postgres
+# kubectl apply -f postgres/secret.yaml
+# mkdir /tmp/k8s-hasura-test
+# kubectl apply -f postgres/persistvol.yaml # this MUST FINISH before you can go forth https://github.com/kubernetes/kubernetes/issues/44370#issuecomment-528435944
+# kubectl apply -f postgres/pvc.yaml
+# kubectl apply -f postgres/deployment-service.yaml
+
+# actually have this setup as a dependency of the hasura chart
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm install postgres bitnami/postgresql --set postgresqlPassword=password, postgresqlDatabase=dbname, postgresqlUsername=username
 
 kubectl wait --for=condition=Available --timeout=180s deployments/postgres
+
+helm install hasura ./hasura-chart --set dburl=postgres://username:password@postgres:5432/dbname, accessKey=accessKey
 
 kubectl apply -f hasura/secret.yaml
 kubectl apply -f hasura/deployment-service.yaml
