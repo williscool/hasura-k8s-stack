@@ -85,6 +85,7 @@ env:
   HASURA_GRAPHQL_ENABLE_CONSOLE: true
   HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log # https://hasura.io/docs/1.0/graphql/core/deployment/logging.html
   HASURA_GRAPHQL_JWT_SECRET: '{"type": "RS256","key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwBBlmVXqrf9AXS1hEzKM\n/HfZ0JvaXMCUpLVe5IsTd3WFMq0HW6vXojM+tX+MJ0Zw4HdRRN7zjW6aq0dSugn+\ng7cCLhvE08r42746Ak2Nb3WntT+eZySn8q1KSuOEwUNtLwyFYlQDrtpXCd62PX3S\nwn252IYxLx1gzwjc8J8DvLs/Ix0UPjgEJja9fZovdIxt7svkLOtjRAazCguZeVEn\nCHIqG8mum6M6JSNVlp6sSS00FM3oJvM+MLvmxMckunNg+gGgoHvD+jpY/j64zRwo\n54aKfys6pM7D7jdc9YiWihQRTJPmkyyIswluMm/mS/l/tBawluxK4beSArrz7pP4\nWwIDAQAB\n-----END PUBLIC KEY-----\n"}'
+  ENV_NAME: local
 
 secrets:
   enabled: true

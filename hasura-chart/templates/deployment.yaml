@@ -48,18 +48,13 @@ spec:
                 secretKeyRef:
                   key: accessKey
                   name: {{ include "hasura.fullname" . }}
-            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
-              value: {{ .Values.env.HASURA_GRAPHQL_ENABLE_CONSOLE | quote }}
-            - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES
-              value: {{ .Values.env.HASURA_GRAPHQL_ENABLED_LOG_TYPES | quote }}
-            {{- if .Values.auth.jwt.enabled }}
-            - name: HASURA_GRAPHQL_JWT_SECRET
-              value: {{ .Values.env.HASURA_GRAPHQL_JWT_SECRET | quote }}
+            # https://github.com/helm/helm/issues/2780#issuecomment-403307198
+          {{- if $.Values.env }}
+            {{- range $key, $value := $.Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
             {{- end }}
-            {{- if .Values.auth.hook.enabled }}
-            - name: HASURA_GRAPHQL_AUTH_HOOK
-              value: {{ .Values.env.HASURA_GRAPHQL_AUTH_HOOK | quote }}
-            {{- end }}
+          {{- end }}
           livenessProbe: # https://github.com/hasura/graphql-engine/issues/1532 https://hasura.io/docs/1.0/graphql/core/api-reference/health.html#health-api-reference
             httpGet:
               path: /healthz
